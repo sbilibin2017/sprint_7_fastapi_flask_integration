@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "title": "JSON schema for Genre data",
+    "type": "object",
+    "required": [
+        "id", 
+        "name"
+    ],
+    "properties": {
+      "id": {"type": "string", "format": "uuid"},      
+      "name": {"type": "string" },  
+    }    
+}
+            
+   

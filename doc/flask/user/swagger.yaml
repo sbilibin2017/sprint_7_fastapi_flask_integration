@@ -1,0 +1,620 @@
+swagger: "2.0"
+
+info:
+  title: User CRUD api with authentication and authorization
+  version: v1
+
+servers:
+  - url: http://0.0.0.1:5000
+schemes:
+  - http
+tags:
+- name: User administration
+- name: Role administration
+paths:
+  /api/v1/admin/user/{id}:  
+    post:
+      tags:
+        - User administration
+      summary: Create user by id
+      description: ""      
+      produces:
+        - application/json        
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          schema:
+            $ref:  "#/components/schemas/TokenUser"
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref:  "#/components/schemas/User" 
+
+    get:
+      tags:
+        - User administration
+      summary: Get user by id
+      description: ""      
+      produces:
+        - application/json        
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref:  "#/components/schemas/User" 
+
+    put:
+      tags:
+        - User administration
+      summary: Update user by id
+      description: ""      
+      produces:
+        - application/json        
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/UserCreate"
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref:  "#/components/schemas/User" 
+
+    delete:
+      tags:
+        - User administration
+      summary: Delete user by id
+      description: ""      
+      produces:
+        - application/json        
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref:  "#/components/schemas/User" 
+
+  /api/v1/admin/users:
+    get:      
+      tags:
+        - User administration
+      summary: Get all users with pagination
+      description: ""
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: string
+        - name: per_page
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:              
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: total objects
+                    example: 1000
+                  total_pages:
+                    type: integer
+                    description: total pages
+                    example: 20
+                  prev:
+                    type: integer
+                    nullable: true
+                    description: previous page number
+                    example: 1
+                  next:
+                    type: integer
+                    nullable: true
+                    description: next page number
+                    example: 2
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+
+  /api/v1/admin/user/{id}/sessions:
+    get:
+      tags:
+        - User administration
+      summary: Get sessions by user id
+      description: ""      
+      produces:
+        - application/json        
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: "#/components/schemas/Session"
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: User not found
+
+  /api/v1/admin/users/sessions:
+    get:      
+      tags:
+        - User administration
+      summary: Get all sessions with pagination
+      description: ""
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: string
+        - name: per_page
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:              
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: total objects
+                    example: 1000
+                  total_pages:
+                    type: integer
+                    description: total pages
+                    example: 20
+                  prev:
+                    type: integer
+                    nullable: true
+                    description: previous page number
+                    example: 1
+                  next:
+                    type: integer
+                    nullable: true
+                    description: next page number
+                    example: 2
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Session"
+
+  /api/v1/admin/role/{id}:
+    post:
+      tags:
+        - Role administration
+      summary: Create role by id
+      description: ""      
+      produces:
+        - application/json        
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleCreate"         
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: "#/components/schemas/Role"
+        
+    get:
+      tags:
+        - Role administration
+      summary: Get role by id
+      description: ""      
+      produces:
+        - application/json        
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: "#/components/schemas/Role"
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Role not found
+    put:
+      tags:
+        - Role administration
+      summary: Update role by id
+      description: ""      
+      produces:
+        - application/json        
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleCreate"       
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: "#/components/schemas/Role"
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Role not found
+    delete:
+      tags:
+        - Role administration
+      summary: Delete role by id
+      description: ""      
+      produces:
+        - application/json        
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: "#/components/schemas/Role"
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Role not found  
+          
+  /api/v1/admin/roles:
+    get:      
+      tags:
+        - Role administration
+      summary: Get all roles with pagination
+      description: ""
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: string
+        - name: per_page
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:              
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: total objects
+                    example: 1000
+                  total_pages:
+                    type: integer
+                    description: total pages
+                    example: 20
+                  prev:
+                    type: integer
+                    nullable: true
+                    description: previous page number
+                    example: 1
+                  next:
+                    type: integer
+                    nullable: true
+                    description: next page number
+                    example: 2
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Role"
+
+  /api/v1/token:
+      get:      
+        tags:
+          - Access+refresh token pair
+        summary: Get token pair
+        description: ""
+        produces:
+          - application/json
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            schema:
+              $ref:  "#/components/schemas/TokenUser"        
+        responses:
+          '200':
+            description: Successful operation
+            schema:
+              $ref: "#/components/schemas/TokenPair"
+
+  /api/v1/token/refresh:
+      get:      
+        tags:
+          - Access+refresh token pair
+        summary: Exchange refresh token for new token pair 
+        description: ""
+        produces:
+          - application/json 
+        responses:
+          '200':
+            description: Successful operation
+            schema:
+              $ref: "#/components/schemas/TokenPair"
+
+components:
+  responses:
+      UnauthorizedError:
+        description: Access token is missing or invalid
+  
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+  
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID 
+        login:
+          type: string
+          description: ""
+          example: admin
+        password:
+          type: string
+          description: ""  
+          example: 123qwe
+        email:
+          type: string
+          description: ""  
+          example: admin@gmail.com
+        first_name:
+          type: string
+          description: ""  
+          example: Firstname  
+        last_name:
+          type: string
+          description: ""  
+          example: Lastname  
+        birth_date:
+          type: string
+          format: date
+          description: ""
+          example: "01.01.2000"
+        created_at:
+          type: string
+          format: datetime
+          description: Datetime of account creation 
+          example: 01.01.2023 00:00:00
+        updated_at:
+          type: string
+          format: datetime
+          description: Datetime of account updation
+          example: 01.01.2023 00:01:00
+
+    UserCreate:
+      type: object
+      properties:      
+        login:
+          type: string
+          description: ""
+          example: admin
+        password:
+          type: string
+          description: ""  
+          example: 123qwe
+        email:
+          type: string
+          description: ""  
+          example: admin@gmail.com   
+        first_name:
+          type: string
+          description: ""  
+          example: Firstname  
+        last_name:
+          type: string
+          description: ""  
+          example: Lastname  
+        birth_date:
+          type: string
+          format: date
+          description: ""
+          example: "01.01.2000"
+
+    Session:
+      type: object
+      properties:      
+        id:
+          type: string
+          format: uuid
+          description: ID 
+        user_id:
+          type: string
+          format: uuid
+          description: ID 
+        user_agent:
+          type: string
+          description: ""  
+          example: "User-Agent: Mozilla/5.0"
+        created_at:
+          type: string
+          format: datetime
+          description: Datetime of session start 
+          example: 01.01.2023 00:00:00
+        updated_at:
+          type: string
+          format: datetime
+          description: Datetime of session finish 
+          example: 01.01.2023 00:01:00
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID 
+        name:
+          type: string
+          description: ""
+          example: admin
+        created_at:
+          type: string
+          format: datetime
+          description: Datetime of role creation 
+          example: 01.01.2023 00:00:00
+        updated_at:
+          type: string
+          format: datetime
+          description: Datetime of role updation
+          example: 01.01.2023 00:01:00
+
+    RoleCreate:
+      type: object
+      properties:      
+        name:
+          type: string
+          description: ""
+          example: new_role
+
+    TokenUser:
+      type: object
+      properties:      
+        login:
+          type: string
+          description: ""
+          example: admin
+        password:
+          type: string
+          description: ""  
+          example: 123qwe
+        email:
+          type: string
+          description: ""  
+          example: admin@gmail.com   
+
+    RefreshToken:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID 
+        session_id:
+          type: string
+          format: uuid
+          description: session ID 
+        value:
+          type: string
+          format: uuid
+          description: refresh token
+        created_at:
+          type: string
+          format: datetime
+          description: Datetime of role creation 
+          example: 01.01.2023 00:00:00
+        updated_at:
+          type: string
+          format: datetime
+          description: Datetime of role updation
+          example: 01.01.2023 00:01:00   
+
+    TokenPair:
+      type: object
+      properties: 
+        access_token:
+          type: string
+          format: uuid
+          description: ""  
+        refresh_token:
+          type: string
+          format: uuid
+          description: ""
+
+    OIDC:
+      type: object
+      properties: 
+        access_token:
+          type: string
+          format: uuid
+          description: ""  
+        refresh_token:
+          type: string
+          format: uuid
+          description: ""  
+        scope: 
+          type: array
+          description: "" 
+          example: "[admin, user, guest]"  
+        expires_at:
+          type: string
+          format: datetime
+          description: ""
+          example: 01.01.2023 00:00:00
+        token_type:
+          type: string            
+          description: ""  
+          example: "Bearer"   
+        id_token:
+          type: string
+          format: uuid
+          description: "token with session data"         
+
+
+security:
+  - bearerAuth: []
+
+
+  
+        
+                 

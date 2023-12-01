@@ -1,0 +1,131 @@
+version: "3.8"
+
+services:
+
+  postgres_user:
+    image: postgres:15
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    env_file:
+      - ./env/postgres/user/.env.dev
+
+  redis_user:
+    image: redis:7.0.8    
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_user_data:/data
+    env_file:
+      - ./env/redis/user/.env.dev   
+
+  postgres_film:
+    image: postgres:15
+    volumes:
+      - ./env:/env
+      - ./postgres/film/dump_09032023.sql:/docker-entrypoint-initdb.d/dump_09032023.sql
+      - postgres_film_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    env_file:
+      - ./env/postgres/film/.env.dev
+
+  redis_film:
+    image: redis:7.0.8    
+    ports:
+      - 6380:6380
+    volumes:
+      - redis_film_data:/data
+    env_file:
+      - ./env/redis/film/.env.dev
+
+  elasticsearch:
+    image: elasticsearch:7.7.0
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch-one/data
+    ports:
+      - 9200:9200
+    env_file:
+      - ./env/elasticsearch/.env.dev
+
+  etl:
+    build:
+      context: ./etl
+      dockerfile: Dockerfile.dev
+    depends_on:
+      elasticsearch:
+        condition: service_started
+      redis:
+        condition: service_started
+    volumes:
+      - ./env:/env
+      - ./.env:/.env
+      - ./etl:/etl
+    env_file:
+      - ./env/postgres/film/.env.dev
+      - ./env/redis/film/.env.dev
+      - ./env/elasticsearch/.env.dev
+      - ./env/docker/film/.env.dev      
+      
+
+  flask_user_app:
+    build:
+      context: ./flask/user
+      dockerfile: Dockerfile.dev
+    image: flask_user_app-image
+    volumes:
+      - ./env:/env      
+      - ./flask/user:/flask/user
+      - ./.env:/.env
+    ports:
+      - 5000:5000
+    depends_on:
+      postgres_user:
+        condition: service_started
+      redis_user:
+        condition: service_started
+    env_file:
+      - ./env/redis/user/.env.dev
+      - ./env/postgres/user/.env.dev
+      - ./env/docker/user/.env.dev 
+
+  fastapi_film_app:
+    build:
+      context: ./fastapi/film
+      dockerfile: Dockerfile.dev
+    image: fastapi_film_app-image
+    volumes:
+      - ./env:/env
+      - ./.env:/.env
+    ports:
+      - 8000:8000
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    env_file:
+      - ./env/redis/film/.env.dev
+      - ./env/postgres/film/.env.dev
+      - ./env/docker/film/.env.dev 
+
+  flask_user_doc:
+   image: swaggerapi/swagger-ui
+   container_name: swagger_ui_container
+   ports:
+      - 8080:8080
+   volumes:
+      - ./doc/flask/user/swagger.yaml:/swagger.yaml
+   environment:
+      - SWAGGER_JSON=/swagger.yaml
+
+volumes:
+  postgres_user_data:
+  postgres_film_data:
+  redis_user_data:
+  redis_film_data:
+  elasticsearch_data:
+  

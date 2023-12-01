@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "title": "JSON schema for actor data",
+    "type": "object",
+    "required": [
+        "id", 
+        "full_name"
+    ],
+    "properties": {
+      "id": {"type": "string", "format": "uuid"},      
+      "name": {"type": "string" },  
+    }    
+}
+            
+   

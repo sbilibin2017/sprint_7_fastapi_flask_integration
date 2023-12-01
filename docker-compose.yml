@@ -1,0 +1,117 @@
+version: "3.8"
+
+services:
+
+  postgres_film:
+    image: postgres:${POSTGRES_VERSION}
+    volumes:
+      - ./env:/env
+      - ./postgres/film/dump_09032023.sql:/docker-entrypoint-initdb.d/dump_09032023.sql
+      - postgres_film_data:/var/lib/postgresql/data
+    expose:
+      - ${POSTGRES_FILM_PORT}
+    env_file:
+      - ./env/postgres/film/.env.dev
+
+  postgres_user:
+    image: postgres:${POSTGRES_VERSION}
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+    expose:
+      - ${POSTGRES_USER_PORT}
+    env_file:
+      - ./env/postgres/user/.env.dev
+
+  redis_user:
+    image: redis:${REDIS_VERSION} 
+    expose:
+      - ${REDIS_USER_PORT}
+    volumes:
+      - redis_user_data:/data
+    env_file:
+      - ./env/redis/user/.env.dev  
+
+  redis_film:
+    image: redis:7.0.8    
+    expose:
+      - ${REDIS_FILM_PORT}
+    volumes:
+      - redis_film_data:/data
+    env_file:
+      - ./env/redis/film/.env.dev  
+
+  elasticsearch:
+    image: elasticsearch:7.7.0
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch-one/data
+    expose:
+      - ${ELASTICSEARCH_PORT}
+    env_file:
+      - ./env/elasticsearch/.env.dev
+
+  flask_user_app:
+    build:
+      context: ./flask/user
+      dockerfile: Dockerfile.dev
+    image: flask_user_app-image
+    volumes:
+      - ./env:/env      
+      - ./app:/app
+      - ./.env:/.env
+    expose:
+      - ${FLASK_USER_PORT}
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    env_file:
+      - ./env/redis/.env.dev
+      - ./env/postgres/.env.dev
+      - ./env/docker/.env.dev 
+
+  fastapi_film_app:
+    build:
+      context: ./fastapi/film
+      dockerfile: Dockerfile.dev
+    image: fastapi_film_app-image
+    volumes:
+      - ./env:/env      
+      - ./app:/app
+      - ./.env:/.env
+    expose:
+      - ${FASTAPI_FILM_PORT}
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    env_file:
+      - ./env/redis/.env.dev
+      - ./env/postgres/.env.dev
+      - ./env/docker/.env.dev 
+
+  nginx:
+    image: nginx:${NGINX_VERSION}
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    env_file:
+      - ./.env
+    depends_on:
+      flask_user_app:
+        condition: service_started
+      fastapi_film_app:
+        condition: service_started      
+    ports:
+      - ${FASTAPI_FILM_PORT}:${NGINX_FILM_PORT}
+      - ${FLASK_USER_PORT}:${NGINX_USER_PORT}
+
+volumes:
+  postgres_user_data:
+  postgres_film_data:
+  redis_user_data:
+  redis_film_data:
+  elasticsearch_data:

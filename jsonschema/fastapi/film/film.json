@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "title": "JSON schema for User data",
+    "type": "object",
+    "required": [
+        "id", 
+        "imdb_rating",
+        "creation_date", 
+        "genre__name",
+        "title", 
+        "description", 
+        "director__full_name", 
+        "actor__full_name",
+        "writer__full_name",
+        "genre",
+        "director",
+        "actor",
+        "writer"],
+    "properties": {
+      "id": {"type": "string", "format": "uuid"},
+      "imdb_rating": {"type": "number" },
+      "creation_date": {"type": "string" },
+      "genre__name": {"type": "array"},
+      "title": {"type": "string"},
+      "description": {"type": "string"},
+      "director__full_name": {"type": "array"},
+      "actor__full_name": {"type": "array"},
+      "writer__full_name": {"type": "array"},
+      "genre": {
+        "description": "genres of film",
+        "type": "object",
+        "properties": {
+            "id": {"type": "string", "format": "uuid"},
+            "name":{"type": "string"}
+        }
+       },
+       "actor": {
+        "description": "actors of film",
+        "type": "object",
+        "properties": {
+            "id": {"type": "string", "format": "uuid"},
+            "full_name":{"type": "string"}
+        }
+       },
+       "writer": {
+        "description": "writers of film",
+        "type": "object",
+        "properties": {
+            "id": {"type": "string", "format": "uuid"},
+            "full_name":{"type": "string"}
+        }
+       },
+       "director": {
+        "description": "directors of film",
+        "type": "object",
+        "properties": {
+            "id": {"type": "string", "format": "uuid"},
+            "full_name":{"type": "string"}
+        }
+       }
+    }
+}
+            
+   
